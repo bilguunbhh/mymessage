@@ -1,175 +1,236 @@
-<!DOCTYPE html>
-<html>
-<meta charset='UTF-8' />
-<meta content='width=device-width, initial-scale=1, user-scalable=1, minimum-scale=1, maximum-scale=5'
-  name='viewport' />
-<meta content='IE=edge' http-equiv='X-UA-Compatible' />
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Shippori+Antique:wght@400;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet">
-
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
-<link href="style.css" rel="stylesheet" type="text/css" />
-<script src="https://unpkg.com/typeit@8.7.0/dist/index.umd.js"></script>
-<script src="https://kit.fontawesome.com/4f3ce16e3e.js" crossorigin="anonymous"></script>
+<!doctype html>
+<html lang="en">
 <head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>One Last Chance — Please Read</title>
+<style>
+  :root { --bg1:#0f172a; --bg2:#0b3a4b; --accent:#ff6b81; }
+  * { box-sizing: border-box; margin:0; padding:0 }
+  body {
+    font-family: Inter, system-ui, sans-serif;
+    color:#e6eef6;
+    background:linear-gradient(135deg,var(--bg1),var(--bg2));
+    min-height:100vh;
+    overflow:hidden;
+  }
+  .slides { position:relative; width:100%; height:100vh; overflow:hidden; }
+  .slide {
+    position:absolute; top:0; left:100%;
+    width:100%; height:100%;
+    display:flex; align-items:center; justify-content:center;
+    transition: all 1s ease;
+    opacity:0;
+  }
+  .slide.active { left:0; opacity:1; }
+  .slide.prev { left:-100%; opacity:0; }
 
+  /* Floating hearts */
+  .heart-bg { position:absolute; top:0; left:0; width:100%; height:100%; overflow:hidden; z-index:0; pointer-events:none; }
+  .floating-heart {
+    position:absolute; bottom:-20px; color:#ff6b81;
+    animation: rise 8s linear infinite;
+    opacity:0.8;
+  }
+  @keyframes rise {
+    0% { transform:translateY(0) scale(0.8); opacity:0 }
+    20%{opacity:1}
+    100%{ transform:translateY(-110vh) scale(1.2); opacity:0 }
+  }
 
+  /* Intro Slide */
+  .intro { text-align:center; z-index:2; }
+  .heart-main {
+    width:120px; height:120px; background:linear-gradient(180deg,var(--accent),#ff4b6e);
+    border-radius:50%; transform:rotate(-45deg); margin:0 auto 20px;
+    animation:pulse 1.5s infinite; position:relative;
+    box-shadow:0 0 30px rgba(255,107,129,0.4);
+  }
+  .heart-main:before,.heart-main:after { content:""; position:absolute; width:120px; height:120px; border-radius:50%; background:inherit; }
+  .heart-main:before{ top:-60px } .heart-main:after{ left:60px }
+  @keyframes pulse { 0%,100%{transform:scale(1) rotate(-45deg)} 50%{transform:scale(1.1) rotate(-45deg)} }
+  .intro h1 { font-size:32px; margin-bottom:12px }
+  .intro p { font-size:18px; margin-bottom:20px }
+  .btn { padding:12px 22px; border-radius:10px; border:none; cursor:pointer; font-weight:600;
+         background:linear-gradient(90deg,var(--accent),#ff4b6e); color:white;
+         box-shadow:0 8px 20px rgba(255,107,129,0.3); }
+
+  /* Slide 2 */
+  .wrap { width:100%; max-width:920px; background:rgba(255,255,255,0.05); border-radius:18px;
+          padding:28px; box-shadow:0 10px 30px rgba(2,6,23,0.6); position:relative; overflow:hidden; }
+  .content { display:grid; grid-template-columns:1fr 380px; gap:18px; }
+  .card { background:rgba(255,255,255,0.02); padding:18px; border-radius:12px; }
+  input,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);
+    background:transparent;color:#fff;margin-bottom:12px;font-size:15px;}
+  textarea{min-height:120px;resize:vertical;}
+  .controls{display:flex;gap:8px;margin-top:12px;}
+  .btn-ghost{background:transparent;color:#cfe6ff;border:1px solid rgba(255,255,255,0.2);}
+  .preview{padding:18px;border-radius:12px;background:rgba(255,255,255,0.02);min-height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;}
+  .letter{max-width:520px;padding:18px;border-radius:12px;background:rgba(255,255,255,0.03);box-shadow:0 6px 20px rgba(2,6,23,0.5);}
+  .typed{font-size:16px;line-height:1.5;color:#fff;min-height:100px;}
+  #confetti{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;}
+  /* Promises timeline */
+  .timeline{margin-top:16px;text-align:left;}
+  .promise{opacity:0;transform:translateY(20px);transition:all 0.6s;}
+  .promise.show{opacity:1;transform:translateY(0);}
+  .promise::before{content:"❤";margin-right:8px;color:#ff6b81;}
+  /* Music btn */
+  #musicBtn{position:absolute;top:20px;right:20px;z-index:10;background:#fff1;padding:8px 14px;border-radius:8px;color:#fff;border:none;cursor:pointer;}
+  @media(max-width:880px){.content{grid-template-columns:1fr}.preview{order:-1}}
+</style>
 </head>
-
 <body>
-  <audio src="lover is a day.mp3" id="linkmp3" class="sembunyi"></audio>
-
-
-
-  <div id="bodyblur">
-  <img src="https://pyxis.nymag.com/v1/imgs/1a0/b19/567d095060b4f9c78f3e02111e880968b6-2017-.2x.w710.jpg" id="wallpaper" />
-    <div id="beneranblur"></div>
+<div class="slides">
+  <!-- Slide 1 -->
+  <div class="slide active" id="slide1">
+    <div class="heart-bg" id="heartBg"></div>
+    <div class="intro">
+      <div class="heart-main"></div>
+      <h1>One Last Chance</h1>
+      <p>I want to show how much you mean to me.</p>
+      <button class="btn" id="nextBtn">Next →</button>
+    </div>
   </div>
 
-  <div id='Content'>
-
-    <div id="kadoIn">
-<img src="https://media4.giphy.com/media/6gT5hWNOZxkVq/200w.gif?cid=6c09b952ev17ry2x5z0kztn0gnjzgl4e76kix2v4woe1pl0b&ep=v1_gifs_search&rid=200w.gif&ct=g" />
+  <!-- Slide 2 -->
+  <div class="slide" id="slide2">
+    <div class="wrap">
+      <button id="musicBtn">🎵 Play Music</button>
+      <canvas id="confetti"></canvas>
+      <div class="content">
+        <div class="card">
+          <label for="to">To</label>
+          <input id="to" value="Buyandelger" />
+          <label for="from">From</label>
+          <input id="from" value="Bilguun" />
+          <label for="message">Message</label>
+          <textarea id="message">I messed up and I am so sorry. I miss you and I understand if you need time, but I want you to know I love you and I'm committed to being better. Please give me one last chance to make things right.</textarea>
+          <div class="controls">
+            <button class="btn" id="send">Send & Show Magic</button>
+            <button class="btn-ghost" id="reset">Reset</button>
+            <button class="btn-ghost" id="copy">Copy</button>
+          </div>
+        </div>
+        <aside class="preview card">
+          <div class="letter" id="letter">
+            <div class="typed" id="typedPreview">I messed up and I am so sorry...</div>
+            <div class="timeline" id="timeline">
+              <div class="promise">I will listen to you deeply.</div>
+              <div class="promise">I will be more patient & kind.</div>
+              <div class="promise">I will grow with you every day.</div>
+              <div class="promise">I will celebrate our love always.</div>
+            </div>
+          </div>
+        </aside>
+      </div>
     </div>
-    <p id="ket">Click on this</p>
-
-    <div class="kumpulanstiker">
-      <!-- Stiker untuk Konten -->
-      <img src="https://media.tenor.com/uUQ5ZRGZ_RMAAAAC/milk-and-mocha-kisses.gif" id="fotostiker" />
-      <img src="https://media.tenor.com/bMQh_2PtzwgAAAAC/mocha-and-milk-mocha-bear.gif" id="fotostiker1" />
-      <img src="https://i.pinimg.com/originals/f0/61/c1/f061c18854fe28120ed76c9e03002937.gif" id="fotostiker2" />
-      <img src="https://i.pinimg.com/originals/50/85/26/508526db68210f54e035517c1f3d6dd3.gif" id="fotostiker3" />
-      <img src="https://i.pinimg.com/originals/7f/71/93/7f7193131963d7913e4eff9ad2700c7f.gif" id="fotostiker4" />
-      <img src="https://i.pinimg.com/originals/d4/98/9f/d4989f324a1ceb73d01c9b1c451a8c96.gif" id="fotostiker5" />
-
-      <img src="pandacoklat.gif" id="fotostiker6" />
-    </div>
-
-    <p id="halo" class="halo"></p>
-
-    <div>
-      <blockquote id='bq' data-text='𝘍𝘳𝘰𝘮 Bilguun'>
-        <p id="kalimat">Hello my dear</p>
-
-       <p id="pesan1">Click on those</p>
-       <div id="kolombaru">
-         <li id="lv1">🤍</li>
-         <li id="lv2">🤍</li>
-         <li id="lv3">🤍</li>
-         <li id="lv4">🤍</li>
-       </div>
-
-        <p id="pesan2">Hold on..</p>
-        <p id="pesan3">Hii babyyy its me Bilguun</p>
-        <p id="pesan4"></p>
-        <p id="pesan5" class="gaya2">Remember i said ill give my gift like 2 weeks ago heres for my gift</p>
-        <p id="pesan6" class="gaya2">I want to u to know dat u came into my life and make it very great like indescribable ima so glad abt it September 13th was best day of my life jus for saying</p>
-        <p id="pesan7" class="gaya2">I want to express my love but idk how like yk chatni araas heleh hetsu so jus in case In deinen Augen finde ich mein Glück
-            Abt lusted over u IMA SO SORRYY BABYYY TT bi ooroo ch medegu bi ingd using for ur body sangdultsn bnlee.
-            I was an idiot💀
-            Ima so sorri TT my darling i didnt mean to I hope u understand :^
-          </p>
-        <p id="pesan8" class="gaya2">Abt lusted over u IMA SO SORRYY BABYYY TT bi ooroo ch medegu bi ingd using for ur body sangdultsn bnlee.</p>
-        <p id="pesan9" class="gaya2">I was an idiot💀</p>
-        <p id="pesan10" class="gaya2">Ima so sorri TT my darling i didnt mean to </p>
-
-        <!-- Tombol Lanjut -->
-        <p id="opsL">Next</p>
-      </blockquote>
-    </div>
-
-    <!-- Tombol Kirim Pesan -->
-    <div id="Tombol"><a id="By">&#128140; Take</a></div>
-
-
-    <!-- Pesan Tambahan -->
-    <p id="katatambahan" class="sembunyi"></p>
-
-    <!-- Pesan Ditolak -->
-    <div id="pesanditolak">
-      <img id="stikerditolak" src="weee.gif" />
-      <p id="kataditolak"></p>
-    </div>
-
   </div>
+</div>
 
-  <script>
-    const body = document.querySelector("body");
-    const swalst = Swal.mixin({
-      timer: 2300,
-      allowOutsideClick: false,
-      showConfirmButton: false,
-      timerProgressBar: true,
-      imageHeight: 90,
-    });
-    audio = new Audio('' + linkmp3.src);
-    ftganti = 0;
-    fungsi = 0;
-    fungsiAwal = 0;
-    deffotostiker = fotostiker.src;
+<!-- Audio -->
+<audio id="bgMusic" loop>
+  <source src="Bruno Mars - It Will Rain [Audio].mp3" type="audio/mpeg">
+</audio>
 
-    function berjatuhan() {
-      const heart = document.createElement("div");
-      heart.className = "fas fa-snowflake";
-      heart.style.left = (Math.random() * 90) + "vw";
-      heart.style.animationDuration = (Math.random() * 3) + 2 + "s";
-      body.appendChild(heart);
+<script>
+  // Slide switching
+  const nextBtn=document.getElementById('nextBtn');
+  const slide1=document.getElementById('slide1');
+  const slide2=document.getElementById('slide2');
+  nextBtn.addEventListener('click',()=>{
+    slide1.classList.remove('active'); slide1.classList.add('prev');
+    slide2.classList.add('active');
+  });
+
+  // Floating hearts
+  const heartBg=document.getElementById('heartBg');
+  function createHeart(){
+    const h=document.createElement('div');
+    h.className='floating-heart'; h.textContent='❤';
+    h.style.left=Math.random()*100+'vw';
+    h.style.fontSize=(14+Math.random()*18)+'px';
+    h.style.animationDuration=(6+Math.random()*4)+'s';
+    heartBg.appendChild(h);
+    setTimeout(()=>h.remove(),10000);
+  }
+  setInterval(createHeart,600);
+
+  // Music controls
+  const music=document.getElementById('bgMusic');
+  const musicBtn=document.getElementById('musicBtn');
+  musicBtn.addEventListener('click',()=>{
+    if(music.paused){ music.play(); musicBtn.textContent='⏸ Pause Music'; }
+    else { music.pause(); musicBtn.textContent='🎵 Play Music'; }
+  });
+
+  // Slide 2 elements
+  const to=document.getElementById('to');
+  const from=document.getElementById('from');
+  const message=document.getElementById('message');
+  const typedPreview=document.getElementById('typedPreview');
+  const sendBtn=document.getElementById('send');
+  const resetBtn=document.getElementById('reset');
+  const copyBtn=document.getElementById('copy');
+  const timeline=document.getElementById('timeline').children;
+  const confettiCanvas=document.getElementById('confetti');
+  const ctx=confettiCanvas.getContext('2d');
+
+  function resizeCanvas(){ confettiCanvas.width=confettiCanvas.offsetWidth; confettiCanvas.height=confettiCanvas.offsetHeight; }
+  window.addEventListener('resize',resizeCanvas); resizeCanvas();
+
+  function typeText(el,text){
+    el.textContent=''; let i=0;
+    const id=setInterval(()=>{ el.textContent+=text[i]||''; i++; if(i>text.length) clearInterval(id); },20);
+  }
+
+  // Confetti
+  let confettiParticles=[];
+  function makeConfetti(){
+    confettiParticles=[];
+    for(let i=0;i<80;i++){
+      confettiParticles.push({x:Math.random()*confettiCanvas.width,y:-Math.random()*confettiCanvas.height,
+        vx:(Math.random()-0.5)*2,vy:Math.random()*3+1,r:Math.random()*6+2,rot:Math.random()*360,
+        vr:(Math.random()-0.5)*10,life:Math.random()*90+60});
     }
-    setInterval(function name(params) {
-      var heartArr = document.querySelectorAll(".fa-snowflake");
-      if (heartArr.length > 100) {
-        heartArr[0].remove()
-      }
-    }, 100);
-    Content.style = "opacity:1;margin-top:16vh";
-    const swals = Swal.mixin({
-      allowOutsideClick: false,
-      cancelButtonColor: '#FF0040',
-      imageHeight: 80,
-    });
-
-    document.getElementById("kadoIn").onclick = function () {
-      if (fungsiAwal == 0) {
-        audio.play();
-        fungsiAwal = 1;
-        kadoIn.style = "transition:all .8s ease;transform:scale(10);opacity:0";
-        wallpaper.style = "transform: scale(1.5);";
-        ket.style = "display:none";
-        setTimeout(initengahan, 300);
-        setTimeout(inipesan, 500)
-      }
-    }
-
-    async function inipesan() {
-      var {
-        value: nama
-      } = await swals.fire({
-        title: 'Ur name~',
-        input: 'text',
+    runConfetti();
+  }
+  let confettiAnim;
+  function runConfetti(){
+    cancelAnimationFrame(confettiAnim);
+    function frame(){
+      ctx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height);
+      confettiParticles.forEach((p)=>{
+        ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot*Math.PI/180);
+        ctx.fillStyle=`hsl(${(p.x+p.y)%360} 80% 60%)`;
+        ctx.fillRect(-p.r/2,-p.r/2,p.r,p.r*0.6);
+        ctx.restore(); p.x+=p.vx; p.y+=p.vy; p.rot+=p.vr*0.1; p.life--;
       });
-      if (nama && nama.length < 11) {
-
-        vketikhalo = "Hai, " + nama + " ✨";
-        mulainama();
-      } else {
-        await swals.fire('zaavl nere bichere😉');
-        inipesan();
-      }
+      confettiParticles=confettiParticles.filter(p=>p.life>0 && p.y<confettiCanvas.height+50);
+      if(confettiParticles.length>0) confettiAnim=requestAnimationFrame(frame);
     }
+    frame();
+  }
 
-    //Variable Pertanyaan Akhir
-    var tanya = 'Wana read continue 😶🎁';
-    var opstanya = '';
-    var tompositif = 'Yes';
-    var tomnegatif = 'Yes';
-
-    
-    
-  </script>
-  <script src="script.js"></script>
+  // Send button
+  sendBtn.addEventListener('click',()=>{
+    const text=message.value.trim();
+    if(!text){ alert('Write something from the heart first.'); return; }
+    typeText(typedPreview,text); makeConfetti();
+    // Show promises one by one
+    [...timeline].forEach((el,i)=>{ setTimeout(()=>el.classList.add('show'),800+i*800); });
+  });
+  resetBtn.addEventListener('click',()=>{
+    to.value='Buyandelger'; from.value='Bilguun';
+    message.value='I messed up and I am so sorry...';
+    typedPreview.textContent=message.value;
+    [...timeline].forEach(el=>el.classList.remove('show'));
+  });
+  copyBtn.addEventListener('click',async()=>{
+    try{
+      await navigator.clipboard.writeText(`${to.value? 'To: '+to.value+'\n':''}${message.value}\n${from.value? '\n— '+from.value:''}`);
+      copyBtn.textContent='Copied!'; setTimeout(()=>copyBtn.textContent='Copy',1400);
+    }catch{ alert('Could not copy automatically.'); }
+  });
+</script>
 </body>
-
 </html>
